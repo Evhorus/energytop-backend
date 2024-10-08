@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+    java_app:
+        container_name: java_app
+        image: energytop-backend/app-1.0.0
+        build: .
+        ports:
+            - 8080:8080
+        environment:
+            - DATABASE_URL=jdbc:postgresql://java_db:5432/energytopDB
+            - DATABASE_USERNAME=energytop
+            - DATABASE_PASSWORD=12345
+        depends_on:
+            - java_db
+        volumes:
+            - .:/app # Sincroniza el directorio del proyecto local con /app en el contenedor (DEV)
+            - ~/.m2:/root/.m2 # Cache de dependencias de Maven para no descargarlas cada vez (DEV)
+    java_db:
+        container_name: java_db
+        image: postgres
+        environment:
+            POSTGRES_USER: energytop
+            POSTGRES_PASSWORD: 12345
+            POSTGRES_DB: energytopDB
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        restart: always
+volumes:
+    pgdata: {}
