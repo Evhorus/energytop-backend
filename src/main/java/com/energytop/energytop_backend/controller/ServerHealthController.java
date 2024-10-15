@@ -1,4 +1,4 @@
-package com.energytop.energytop_backend.server_health;
+package com.energytop.energytop_backend.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

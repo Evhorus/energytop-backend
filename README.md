@@ -1,3 +1,18 @@
+# EnergyTop
+
+Para la creación de esta API se utilizaron las siguientes tecnologías:
+
+1. Spring Boot Framework: Facilita la creación de aplicaciones Java al proporcionar una estructura de proyecto predefinida y configuraciones por defecto, lo que acelera el desarrollo y simplifica la implementación de aplicaciones web.
+
+2. Spring Boot DevTools: Permite una experiencia de desarrollo más ágil al proporcionar capacidades de reinicio automático y soporte para el desarrollo en caliente, lo que reduce el tiempo de espera durante el ciclo de desarrollo.
+
+3. PostgreSQL: Este sistema de gestión de bases de datos relacional se utilizó para almacenar y gestionar los datos de la aplicación de manera eficiente, ofreciendo características avanzadas como transacciones y soporte para datos geoespaciales.
+
+4. Lombok: Esta biblioteca se utilizó para reducir el código boilerplate, generando automáticamente métodos comunes como getters, setters y constructores, lo que mejora la legibilidad y mantenimiento del código.
+
+
+5. JPA (Java Persistence API): Se utilizó para gestionar la persistencia de datos, permitiendo una interacción sencilla con la base de datos a través de objetos Java, lo que simplifica el acceso y manipulación de los datos.
+
 # Instalación del Backend - Spring Boot
 
 ## Requisitos Previos
