@@ -2,32 +2,34 @@ package com.energytop.energytop_backend.service;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.energytop.energytop_backend.entity.User;
-import com.energytop.energytop_backend.repository.UserRepository;
+import com.energytop.energytop_backend.persistence.entity.user.UserEntity;
+import com.energytop.energytop_backend.persistence.repository.user.UserRepository;
 
 @Service
 public class AuthService {
 
-  private List<User> users;
+  private List<UserEntity> users;
 
   @Autowired
   UserRepository userRepository;
-  public String createUser( User user){
+  private PasswordEncoder passwordEncoder;
+
+  public String createUser(UserEntity user) {
     loadUsers();
     // Verificar si el email ya está registrado
-    for (User userr : users) {
-      if(userr.getEmail().equals(user.getEmail())){
+    for (UserEntity userr : users) {
+      if (userr.getEmail().equals(user.getEmail())) {
         return "El email ya está en uso.";
       }
-    } 
+    }
 
     // Hashing de la contraseña
 
     // Hashing de la contraseña
-    //  String encodedPassword = passwordEncoder.encode(user.getPassword());
-
+    // String encodedPassword = passwordEncoder.encode(user.getPassword());
     // user.setPassword(encodedPassword);
 
     // Guardar el usuario
@@ -35,11 +37,11 @@ public class AuthService {
     return "Usuario Creado Correctamente";
   }
 
-  private void loadUsers(){
+  private void loadUsers() {
     this.users = this.userRepository.findAll();
   }
 
-  public String login(){
+  public String login() {
     return "login";
   }
 
