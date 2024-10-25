@@ -1,4 +1,4 @@
-package com.energytop.energytop_backend.persistence.entity.user;
+package com.energytop.energytop_backend.auth.entities;
 
 import java.util.HashSet;
 import java.util.Set;
