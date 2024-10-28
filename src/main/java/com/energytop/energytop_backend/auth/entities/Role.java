@@ -33,18 +33,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "roles")
-public class RoleEntity {
+public class Role {
+
+  public Role(String name) {
+    this.name = name;
+  }
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "role_name")
-  @Enumerated(EnumType.STRING)
-  private RoleEnum roleEnum;
-
-  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @JoinTable(name = "role_permission", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
-  private Set<PermissionEntity> permissionsList = new HashSet<>();
+  @Column(unique = true)
+  private String name;
 
 }
