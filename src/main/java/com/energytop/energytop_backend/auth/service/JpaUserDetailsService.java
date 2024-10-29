@@ -26,7 +26,7 @@ public class JpaUserDetailsService implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-    Optional<com.energytop.energytop_backend.auth.entities.User> userOptional = userRepository.findByUsername(username);
+    Optional<com.energytop.energytop_backend.auth.entities.User> userOptional = userRepository.findByEmail(username);
     if (!userOptional.isPresent()) {
       throw new UsernameNotFoundException(String.format("Username %s no existe en el sistema", username));
     }
@@ -36,7 +36,7 @@ public class JpaUserDetailsService implements UserDetailsService {
     List<GrantedAuthority> authorities = user.getRoles()
         .stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
 
-    return new User(user.getUsername(), user.getPassword(), true, true, true, true,
+    return new User(user.getEmail(), user.getPassword(), true, true, true, true,
         authorities);
   }
 

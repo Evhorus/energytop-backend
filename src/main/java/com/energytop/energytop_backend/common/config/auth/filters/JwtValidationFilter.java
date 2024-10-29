@@ -46,8 +46,6 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
     try {
       Claims claims = Jwts.parser().verifyWith(TokenJwtConfig.SECRET_KEY).build().parseSignedClaims(token).getPayload();
 
-      System.out.println(claims);
-
       // Comprobar si authoritiesClaims es una lista y convertir
       Object authoritiesClaims = claims.get("authorities");
       List<String> authorities = new ArrayList<>();

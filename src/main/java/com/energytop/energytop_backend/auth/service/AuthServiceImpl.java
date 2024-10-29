@@ -10,12 +10,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.energytop.energytop_backend.auth.dto.TokenValidationRequestDto;
 import com.energytop.energytop_backend.auth.dto.UserDto;
 import com.energytop.energytop_backend.auth.dto.mapper.UserDtoMapper;
 import com.energytop.energytop_backend.auth.entities.Role;
 import com.energytop.energytop_backend.auth.entities.User;
 import com.energytop.energytop_backend.auth.repository.RoleRepository;
 import com.energytop.energytop_backend.auth.repository.UserRepository;
+import com.energytop.energytop_backend.common.config.auth.TokenJwtConfig;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -58,27 +63,35 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  @Transactional()
+  @Transactional
   public Optional<UserDto> update(User user, Long id) {
-
     Optional<User> userDb = userRepository.findById(id);
-    User userOptional = null;
 
     if (userDb.isPresent()) {
       User userDbToEdit = userDb.orElseThrow();
-      userDbToEdit.setFirstName(user.getFirstName());
-      userDbToEdit.setLastName(user.getLastName());
-      userDbToEdit.setEmail(user.getEmail());
-      userDbToEdit.setPassword(user.getPassword());
-      userOptional = userRepository.save(userDbToEdit);
+      if (user.getFirstName() != null) {
+        userDbToEdit.setFirstName(user.getFirstName());
+      }
+      if (user.getLastName() != null) {
+        userDbToEdit.setLastName(user.getLastName());
+      }
+      if (user.getEmail() != null) {
+        userDbToEdit.setEmail(user.getEmail());
+      }
+      if (user.getPassword() != null) {
+        userDbToEdit.setPassword(passwordEncoder.encode(user.getPassword()));
+      }
+
+      User userOptional = userRepository.save(userDbToEdit);
+      return Optional.ofNullable(UserDtoMapper.builder().setUser(userOptional).build());
     }
 
-    return Optional.ofNullable(UserDtoMapper.builder().setUser(userOptional).build());
+    return Optional.empty();
   }
 
   @Override
-@Transactional
-public void remove(Long userId) {
+  @Transactional
+  public void remove(Long userId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
@@ -87,10 +100,24 @@ public void remove(Long userId) {
         .anyMatch(role -> "ROLE_ADMIN".equals(role.getName()));
 
     if (isAdmin) {
-        throw new UnsupportedOperationException("No se puede eliminar un usuario con rol de ADMIN");
+      throw new UnsupportedOperationException("No se puede eliminar un usuario con rol de ADMIN");
     }
 
     userRepository.deleteById(userId);
-}
+  }
+
+  @Override
+  @Transactional
+  public boolean isTokenValid(TokenValidationRequestDto tokenValidationRequestDto) {
+    try {
+      Jwts.parser().verifyWith(TokenJwtConfig.SECRET_KEY).build().parseSignedClaims(tokenValidationRequestDto.getToken()).getPayload();
+      System.out.println("paso");
+      return true;
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+    System.out.println("no paso");
+    return false;
+  }
 
 }

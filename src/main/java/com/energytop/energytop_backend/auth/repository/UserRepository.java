@@ -9,6 +9,6 @@ import com.energytop.energytop_backend.auth.entities.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-  User findByEmail(String email);
-  Optional<User> findByUsername(String username);
+  Optional<User> findByEmail(String email);
+  long countByEmail(String email);
 }

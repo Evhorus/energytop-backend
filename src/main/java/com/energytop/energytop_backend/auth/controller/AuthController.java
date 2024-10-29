@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.energytop.energytop_backend.auth.dto.TokenValidationRequestDto;
 import com.energytop.energytop_backend.auth.dto.UserDto;
 import com.energytop.energytop_backend.auth.entities.User;
 import com.energytop.energytop_backend.auth.service.AuthService;
@@ -21,6 +22,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
@@ -53,14 +55,13 @@ public class AuthController {
     return ResponseEntity.status(HttpStatus.CREATED).body(authService.save(user));
   }
 
-  @PutMapping("/{id}")
+  @PatchMapping("/{id}")
   public ResponseEntity<?> update(@PathVariable Long id, @RequestBody User user) {
     Optional<UserDto> userDb = authService.update(user, id);
     if (!userDb.isPresent())
       return ResponseEntity.notFound().build();
     return ResponseEntity.status(HttpStatus.CREATED).body(userDb.orElseThrow());
   }
-
 
   @DeleteMapping("/{id}")
   public ResponseEntity<?> remove(@PathVariable Long id) {
@@ -70,6 +71,17 @@ public class AuthController {
 
     authService.remove(id);
     return ResponseEntity.status(HttpStatus.OK).body("Usuario eliminado");
+  }
+
+  @PostMapping("/validate-token")
+  public ResponseEntity<?> validateToken(@RequestBody TokenValidationRequestDto tokenValidationRequestDto) {
+    System.out.println(tokenValidationRequestDto.getToken());
+    boolean isValid = authService.isTokenValid(tokenValidationRequestDto);
+    if (isValid) {
+      return ResponseEntity.ok("Token válido.");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token no válido.");
+    }
   }
 
   // @PostMapping("/login")

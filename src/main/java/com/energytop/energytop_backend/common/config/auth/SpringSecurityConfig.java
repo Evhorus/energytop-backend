@@ -47,7 +47,8 @@ public class SpringSecurityConfig {
     return httpSecurity
 
         .authorizeHttpRequests(http -> {
-          http.requestMatchers(HttpMethod.GET, "/users").permitAll()
+          http.requestMatchers(HttpMethod.POST, "/users/validate-token").permitAll()
+              .requestMatchers(HttpMethod.GET, "/users").permitAll()
               .requestMatchers("/users/**").hasRole("ADMIN")
               .anyRequest().authenticated();
         })
@@ -63,7 +64,7 @@ public class SpringSecurityConfig {
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(Arrays.asList(new String[] { "http://localhost:5173" }));
-    configuration.setAllowedMethods(Arrays.asList(new String[] { "GET", "POST", "PUT", "DELETE" }));
+    configuration.setAllowedMethods(Arrays.asList(new String[] { "GET", "POST", "PATCH", "DELETE" }));
     configuration.setAllowedHeaders(Arrays.asList(new String[] { "Authorization", "Content-type" }));
     configuration.setAllowCredentials(true);
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

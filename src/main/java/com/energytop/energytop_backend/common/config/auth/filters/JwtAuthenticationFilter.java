@@ -39,12 +39,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       throws AuthenticationException {
 
     User user = null;
-    String username = null;
+    String email = null;
     String password = null;
 
     try {
       user = new ObjectMapper().readValue(request.getInputStream(), User.class);
-      username = user.getUsername();
+      email = user.getEmail();
       password = user.getPassword();
 
     } catch (StreamReadException e) {
@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       e.printStackTrace();
     }
 
-    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
+    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password);
     return authenticationManager.authenticate(authToken);
   }
 
@@ -66,7 +66,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
       Authentication authResult) throws IOException, ServletException {
 
-    String username = ((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername();
+    String email = ((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername();
 
     Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
 
@@ -79,8 +79,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     String token = Jwts.builder()
         .claim("authorities", authorities)
         .claim("isAdmin", isAdmin)
-        .claim("username", username)
-        .subject(username)
+        .claim("email", email)
         .signWith(TokenJwtConfig.SECRET_KEY)
         .issuedAt(new Date())
         .expiration(new Date(System.currentTimeMillis() + 36000000)).compact();
@@ -90,8 +89,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     Map<String, Object> body = new HashMap<>();
 
     body.put("token", token);
-    body.put("message", String.format("Hola %s, has iniciado sesion con exito!", username));
-    body.put("username", username);
+    body.put("message", String.format("Hola %s, has iniciado sesion con exito!", email));
+    body.put("username", email);
 
     response.getWriter().write(new ObjectMapper().writeValueAsString(body));
     response.setStatus(200);
