@@ -28,7 +28,7 @@ public class JpaUserDetailsService implements UserDetailsService {
 
     Optional<com.energytop.energytop_backend.auth.entities.User> userOptional = userRepository.findByEmail(username);
     if (!userOptional.isPresent()) {
-      throw new UsernameNotFoundException(String.format("Username %s no existe en el sistema", username));
+      throw new UsernameNotFoundException(String.format("El email %s no existe en el sistema", username));
     }
 
     com.energytop.energytop_backend.auth.entities.User user = userOptional.orElseThrow();

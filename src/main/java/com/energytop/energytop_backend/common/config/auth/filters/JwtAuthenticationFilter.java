@@ -37,11 +37,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
       throws AuthenticationException {
-
     User user = null;
     String email = null;
     String password = null;
-
     try {
       user = new ObjectMapper().readValue(request.getInputStream(), User.class);
       email = user.getEmail();
@@ -76,6 +74,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         .map(GrantedAuthority::getAuthority) // Obtiene el nombre de la autoridad
         .collect(Collectors.toList());
 
+        System.out.println("paso");
+
     String token = Jwts.builder()
         .claim("authorities", authorities)
         .claim("isAdmin", isAdmin)
@@ -90,7 +90,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     body.put("token", token);
     body.put("message", String.format("Hola %s, has iniciado sesion con exito!", email));
-    body.put("username", email);
+    body.put("email", email);
 
     response.getWriter().write(new ObjectMapper().writeValueAsString(body));
     response.setStatus(200);
@@ -103,7 +103,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       AuthenticationException failed) throws IOException, ServletException {
 
     Map<String, Object> body = new HashMap<>();
-    body.put("message", "Error en la autenticacion user o password incorrecto!");
+    body.put("message", "Error en la autenticacion email o password incorrecto!");
     body.put("error", failed.getMessage());
 
     response.getWriter().write(new ObjectMapper().writeValueAsString(body));

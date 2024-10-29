@@ -24,19 +24,14 @@ public class DataInitializer implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    // Verificar si ya existe el rol de ADMIN
     Optional<Role> roleOptional = roleRepository.findByName("ROLE_ADMIN");
-
     if (roleOptional.isEmpty()) {
-      // Si el rol no existe, crearlo
       Role adminRole = new Role("ROLE_ADMIN");
       roleRepository.save(adminRole);
       System.out.println("Rol de administrador creado.");
     }
+    if (userRepository.countByEmail("admin@admin.com") == 0) {
 
-    // Verificar si ya existe un usuario administrador
-    if (userRepository.countByEmail("admin") == 0) {
-      // Crear y guardar un nuevo usuario si no hay usuario administrador existente
       User user = new User();
       user.setFirstName("admin");
       user.setLastName("admin");
