@@ -18,17 +18,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "region")
-public class Region {
+@Table(name = "countries")
+public class Country {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "region_name")
-  private String regionName;
+  @Column(name = "country_name")
+  private String countryName;
 
-  @Column(name = "region_code")
-  private String regionCode;
+  @Column(name = "country_code")
+  private String CountryCode;
 
   @Column(name = "population")
   private Long population;

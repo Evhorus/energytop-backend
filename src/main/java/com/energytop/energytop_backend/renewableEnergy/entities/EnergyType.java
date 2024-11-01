@@ -18,7 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "energyType")
+@Table(name = "energy_types")
 public class EnergyType {
 
   @Id

@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Setter
 @Getter
 @Builder
@@ -27,17 +26,20 @@ public class RenewableEnergies {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "energy_type")
-  private String energyType;
+  @Column(name = "consumption")
+  private Double consumption;
 
-  // @ManyToOne
-  // @JoinColumn(name = "region_id")
-  // private String region;
-
-  @Column(name = "consumption_year")
-  private Double consumptionYear;
+  @Column(name = "production")
+  private Double production;
 
   @Column(name = "year")
   private Integer year;
 
+  @ManyToOne
+  @JoinColumn(name = "energy_type_id")
+  private EnergyType energyType;
+
+  @ManyToOne
+  @JoinColumn(name = "country_id")
+  private Country country;
 }

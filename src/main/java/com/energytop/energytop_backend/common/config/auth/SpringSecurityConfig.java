@@ -50,6 +50,7 @@ public class SpringSecurityConfig {
           http.requestMatchers(HttpMethod.POST, "/users/validate-token").permitAll()
               .requestMatchers(HttpMethod.GET, "/users").permitAll()
               .requestMatchers("/users/**").hasRole("ADMIN")
+              .requestMatchers("/renewable-energy/**").hasRole("ADMIN")
               .anyRequest().authenticated();
         })
         .addFilter(new JwtAuthenticationFilter(authenticationManager()))
