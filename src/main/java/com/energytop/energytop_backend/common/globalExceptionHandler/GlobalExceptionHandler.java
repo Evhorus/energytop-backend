@@ -19,4 +19,13 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("error", "Request processing failed");
+    errorResponse.put("message", ex.getMessage()); // Retornar el mensaje de la excepción
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
 }

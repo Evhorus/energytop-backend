@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +52,10 @@ public class AuthServiceImpl implements AuthService {
   @Override
   @Transactional()
   public UserDto save(User user) {
+    Optional<User> userDb = userRepository.findByEmail(user.getEmail());
+    if (userDb.isPresent()) {
+      throw new IllegalArgumentException("Ya existe un perfil con ese email");
+    }
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     Optional<Role> roleOptional = roleRepository.findByName("ROLE_USER");
     List<Role> roles = new ArrayList<>();
@@ -110,7 +115,8 @@ public class AuthServiceImpl implements AuthService {
   @Transactional
   public boolean isTokenValid(TokenValidationRequestDto tokenValidationRequestDto) {
     try {
-      Jwts.parser().verifyWith(TokenJwtConfig.SECRET_KEY).build().parseSignedClaims(tokenValidationRequestDto.getToken()).getPayload();
+      Jwts.parser().verifyWith(TokenJwtConfig.SECRET_KEY).build()
+          .parseSignedClaims(tokenValidationRequestDto.getToken()).getPayload();
       return true;
     } catch (Exception e) {
       System.out.println(e);
