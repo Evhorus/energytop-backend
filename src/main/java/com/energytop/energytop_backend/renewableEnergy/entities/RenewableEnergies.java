@@ -27,10 +27,10 @@ public class RenewableEnergies {
   private Long id;
 
   @Column(name = "consumption")
-  private Double consumption;
+  private Double consumption; //Consumo 
 
   @Column(name = "production")
-  private Double production;
+  private Double production; // Produccion 
 
   @Column(name = "year")
   private Integer year;

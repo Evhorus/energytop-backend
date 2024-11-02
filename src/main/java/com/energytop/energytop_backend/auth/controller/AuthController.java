@@ -75,7 +75,6 @@ public class AuthController {
 
   @PostMapping("/validate-token")
   public ResponseEntity<?> validateToken(@RequestBody TokenValidationRequestDto tokenValidationRequestDto) {
-    System.out.println(tokenValidationRequestDto.getToken());
     boolean isValid = authService.isTokenValid(tokenValidationRequestDto);
     if (isValid) {
       return ResponseEntity.ok("Token válido.");

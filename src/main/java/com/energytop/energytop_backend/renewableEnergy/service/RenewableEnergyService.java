@@ -1,10 +1,18 @@
 package com.energytop.energytop_backend.renewableEnergy.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.energytop.energytop_backend.auth.dto.RenewableEnergyPercentageDto;
+import com.energytop.energytop_backend.renewableEnergy.dto.CountryEnergyTotalDto;
+import com.energytop.energytop_backend.renewableEnergy.dto.PaginatedResponseDto;
 import com.energytop.energytop_backend.renewableEnergy.entities.Country;
 import com.energytop.energytop_backend.renewableEnergy.entities.EnergyType;
 import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergies;
@@ -22,9 +30,26 @@ public class RenewableEnergyService {
   @Autowired
   private CountryRepository countryRepository;
 
+  /*
+   * Listar todas las fuentes de energía y su participación en el consumo
+   * eléctrico
+   * total a nivel global
+   */
+
   @Transactional
-  public List<RenewableEnergies> findAll() {
-    return renewableEnergiesRepository.findAll();
+  public PaginatedResponseDto<RenewableEnergies> findAll(Pageable pageable) {
+    Page<RenewableEnergies> page = renewableEnergiesRepository.findAll(pageable);
+    return new PaginatedResponseDto<>(
+        page.getContent(),
+        page.getNumber(),
+        page.getSize(),
+        page.getTotalElements(),
+        page.getTotalPages(),
+        page.isFirst(),
+        page.isLast(),
+        page.isEmpty(),
+        pageable,
+        pageable.getSort());
   }
 
   /*
@@ -32,27 +57,53 @@ public class RenewableEnergyService {
    * año específico, agrupada por regiones
    */
 
-  private Double getTotalRenewableEnergyBySourceAndCountry(String source, String country) {
+  @Transactional
+  public List<CountryEnergyTotalDto> getTotalRenewableEnergyBySourceAndCountry(String energyName, int year) {
 
-    // Traer la base de datos List = array toda la data...
+    List<RenewableEnergies> renewableEnergies = renewableEnergiesRepository
+        .findByEnergyType_EnergyNameAndYear(energyName, year);
 
-    // Filtar por año y por source if(List.source == source && List.country ==
-    // country) -> List ,
+    return renewableEnergies.stream()
+        .collect(
+            Collectors.groupingBy(
+                energy -> energy.getCountry().getCountryName(),
+                Collectors.summingDouble(RenewableEnergies::getProduction)))
+        .entrySet().stream()
+        .map(entry -> new CountryEnergyTotalDto(entry.getKey(), entry.getValue(), energyName, year)) 
+        .collect(Collectors.toList());
+  }
+  /*
+   * Calcular el porcentaje de energía renovable en el consumo eléctrico total de
+   * cada pais.
+   */
 
-    // Lista con filtro ya aplicado
+  @Transactional
+  public List<RenewableEnergyPercentageDto> calculateRenewableEnergyPercentageByRegion() {
 
-    // List.production + sumar todo y retorna el resultado,
+    List<RenewableEnergies> renewableEnergies = renewableEnergiesRepository.findAll();
 
-    return 12.22;
+    Map<String, Double> renewableProductionByCountry = renewableEnergies.stream()
+        .collect(Collectors.groupingBy(energy -> energy.getCountry().getCountryName(),
+            Collectors.summingDouble(RenewableEnergies::getProduction)));
+
+    Map<String, Double> totalConsumptionByCountry = renewableEnergies.stream()
+        .collect(Collectors.groupingBy(energy -> energy.getCountry().getCountryName(),
+            Collectors.summingDouble(RenewableEnergies::getConsumption)));
+
+    // Calcular el porcentaje de energía renovable por país
+    return totalConsumptionByCountry.keySet().stream()
+        .map(country -> {
+          double totalConsumption = totalConsumptionByCountry.get(country);
+          double renewableProduction = renewableProductionByCountry.getOrDefault(country, 0.0);
+          double percentage = (totalConsumption > 0) ? (renewableProduction / totalConsumption) * 100 : 0;
+          return new RenewableEnergyPercentageDto(country, percentage);
+        }).collect(Collectors.toList());
+
   }
 
   /*
-   * Calcular el porcentaje de energía renovable en el consumo eléctrico total de
-   * cada región.
-   */
-
-  /*
-   * Obtener la tendencia de la capacidad instalada de energía solar a lo largo de
+   * Obtener la tendencia de la capacidad instalada de segun tipo de energia a lo
+   * largo de
    * los años.
    */
 
@@ -61,11 +112,15 @@ public class RenewableEnergyService {
    * específico.
    */
 
-  /*
-   * Listar todas las fuentes de energía y su participación en el consumo
-   * eléctrico
-   * total a nivel global
-   */
+  @Transactional
+  public List<EnergyType> getEnergyTypes() {
+    return energyTypeRepository.findAll();
+  }
+
+  @Transactional
+  public List<Country> getCountries() {
+    return countryRepository.findAll();
+  }
 
   // SEEDS llenar base datos
   @Transactional

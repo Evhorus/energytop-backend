@@ -1,11 +1,19 @@
 package com.energytop.energytop_backend.renewableEnergy.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.energytop.energytop_backend.auth.dto.RenewableEnergyPercentageDto;
+import com.energytop.energytop_backend.renewableEnergy.dto.CountryEnergyTotalDto;
+import com.energytop.energytop_backend.renewableEnergy.dto.PaginatedResponseDto;
 import com.energytop.energytop_backend.renewableEnergy.entities.Country;
 import com.energytop.energytop_backend.renewableEnergy.entities.EnergyType;
 import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergies;
@@ -23,8 +31,30 @@ public class RenewableEnergyController {
   public RenewableEnergyService renewableEnergyService;
 
   @GetMapping
-  public List<RenewableEnergies> findAll() {
-    return renewableEnergyService.findAll();
+  public PaginatedResponseDto<RenewableEnergies> findAll(@PageableDefault(size = 10) Pageable pageable) {
+    return renewableEnergyService.findAll(pageable);
+  }
+
+  @GetMapping("/total-production")
+  public List<CountryEnergyTotalDto> getTotalRenewableEnergyBySourceAndCountry(
+      @RequestParam String energyName,
+      @RequestParam int year) {
+    return renewableEnergyService.getTotalRenewableEnergyBySourceAndCountry(energyName, year);
+  }
+
+  @GetMapping("/renewable-percentage")
+  public List<RenewableEnergyPercentageDto> getRenewableEnergyPercentageByRegion() {
+    return renewableEnergyService.calculateRenewableEnergyPercentageByRegion();
+  }
+
+  @GetMapping("/energy-types")
+  public List<EnergyType> getEnergyTypes() {
+    return renewableEnergyService.getEnergyTypes();
+  }
+
+  @GetMapping("/countries")
+  public List<Country> getCountries() {
+    return renewableEnergyService.getCountries();
   }
 
   @PostMapping("/seed/energy-types")

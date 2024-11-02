@@ -74,8 +74,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         .map(GrantedAuthority::getAuthority) // Obtiene el nombre de la autoridad
         .collect(Collectors.toList());
 
-        System.out.println("paso");
-
     String token = Jwts.builder()
         .claim("authorities", authorities)
         .claim("isAdmin", isAdmin)

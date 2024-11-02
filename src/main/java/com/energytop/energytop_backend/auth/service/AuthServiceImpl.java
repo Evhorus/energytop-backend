@@ -111,12 +111,10 @@ public class AuthServiceImpl implements AuthService {
   public boolean isTokenValid(TokenValidationRequestDto tokenValidationRequestDto) {
     try {
       Jwts.parser().verifyWith(TokenJwtConfig.SECRET_KEY).build().parseSignedClaims(tokenValidationRequestDto.getToken()).getPayload();
-      System.out.println("paso");
       return true;
     } catch (Exception e) {
       System.out.println(e);
     }
-    System.out.println("no paso");
     return false;
   }
 
