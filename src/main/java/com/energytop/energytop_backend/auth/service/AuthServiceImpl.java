@@ -36,8 +36,14 @@ public class AuthServiceImpl implements AuthService {
   @Transactional(readOnly = true)
   public List<UserDto> findAll() {
     List<User> users = (List<User>) userRepository.findAll();
-    return users
-        .stream().map(user -> UserDtoMapper.builder().setUser(user).build())
+    return users.stream()
+        .filter(user -> {
+
+          boolean isAdmin = user.getRoles().stream()
+              .anyMatch(role -> "ROLE_ADMIN".equals(role.getName()));
+          return !isAdmin;
+        })
+        .map(user -> UserDtoMapper.builder().setUser(user).build())
         .collect(Collectors.toList());
   }
 
