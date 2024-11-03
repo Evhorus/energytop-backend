@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.energytop.energytop_backend.auth.dto.RenewableEnergyPercentageDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.CountryEnergyTotalDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.PaginatedResponseDto;
+import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergyPercentageDto;
 import com.energytop.energytop_backend.renewableEnergy.entities.Country;
 import com.energytop.energytop_backend.renewableEnergy.entities.EnergyType;
 import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergies;

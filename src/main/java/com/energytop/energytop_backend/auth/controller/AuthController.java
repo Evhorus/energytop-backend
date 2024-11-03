@@ -2,7 +2,6 @@ package com.energytop.energytop_backend.auth.controller;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.energytop.energytop_backend.auth.dto.CreateUserDto;
 import com.energytop.energytop_backend.auth.dto.TokenValidationRequestDto;
+import com.energytop.energytop_backend.auth.dto.UpdateUserDto;
 import com.energytop.energytop_backend.auth.dto.UserDto;
-import com.energytop.energytop_backend.auth.entities.User;
 import com.energytop.energytop_backend.auth.service.AuthService;
 
 import jakarta.validation.Valid;
@@ -28,46 +28,37 @@ import org.springframework.web.bind.annotation.PathVariable;
 @CrossOrigin(originPatterns = "*")
 @RestController
 @RequestMapping(path = "/users")
-@Validated
 public class AuthController {
 
   @Autowired
   AuthService authService;
 
   @GetMapping()
-  public List<UserDto> findAll() {
-    return authService.findAll();
+  public ResponseEntity<List<UserDto>> findAll() {
+    List<UserDto> users = authService.findAll();
+    return ResponseEntity.status(HttpStatus.OK).body(users);
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<?> findById(@PathVariable() Long id) {
-    Optional<UserDto> userOptional = authService.findById(id);
-
-    if (!userOptional.isPresent())
-      return ResponseEntity.notFound().build();
-
-    return ResponseEntity.ok(userOptional.orElseThrow());
+  @GetMapping("/{identifier}")
+  public ResponseEntity<Optional<UserDto>> findByIdOrEmail(@PathVariable String identifier) {
+    Optional<UserDto> user = authService.findByIdOrEmail(identifier);
+    return ResponseEntity.status(HttpStatus.OK).body(user);
   }
 
   @PostMapping()
-  public ResponseEntity<?> create(@Valid @RequestBody User user) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(authService.save(user));
+  public ResponseEntity<?> create(@Valid @RequestBody CreateUserDto createUserDto) {
+    authService.create(createUserDto);
+    return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado correctamente");
   }
 
   @PatchMapping("/{id}")
-  public ResponseEntity<?> update(@PathVariable Long id, @RequestBody User user) {
-    Optional<UserDto> userDb = authService.update(user, id);
-    if (!userDb.isPresent())
-      return ResponseEntity.notFound().build();
-    return ResponseEntity.status(HttpStatus.CREATED).body(userDb.orElseThrow());
+  public ResponseEntity<String> update(@PathVariable Long id, @RequestBody UpdateUserDto updateUserDto) {
+    authService.update(id, updateUserDto);
+    return ResponseEntity.status(HttpStatus.OK).body("Usuario actualizado correctamente");
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<?> remove(@PathVariable Long id) {
-    Optional<UserDto> userDb = authService.findById(id);
-    if (!userDb.isPresent())
-      return ResponseEntity.notFound().build();
-
     authService.remove(id);
     return ResponseEntity.status(HttpStatus.OK).body("Usuario eliminado");
   }
@@ -78,15 +69,8 @@ public class AuthController {
     if (isValid) {
       return ResponseEntity.ok("Token válido.");
     } else {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token no válido.");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token.");
     }
   }
-
-  // @PostMapping("/login")
-  // @ResponseStatus(HttpStatus.CREATED)
-  // public ResponseEntity<String> loginUser(@Valid @RequestBody LoginDto
-  // loginDto) {
-  // return authService.login(loginDto);
-  // }
 
 }

@@ -10,9 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.energytop.energytop_backend.auth.dto.RenewableEnergyPercentageDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.CountryEnergyTotalDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.PaginatedResponseDto;
+import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergyPercentageDto;
 import com.energytop.energytop_backend.renewableEnergy.entities.Country;
 import com.energytop.energytop_backend.renewableEnergy.entities.EnergyType;
 import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergies;
