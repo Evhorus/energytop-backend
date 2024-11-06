@@ -1,5 +1,8 @@
 package com.energytop.energytop_backend.renewableEnergy.entities;
 
+import com.energytop.energytop_backend.countries.entities.Country;
+import com.energytop.energytop_backend.energyTypes.entities.EnergyType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -51,6 +51,8 @@ public class SpringSecurityConfig {
               .requestMatchers(HttpMethod.GET, "/users").permitAll()
               .requestMatchers("/users/**").hasRole("ADMIN")
               .requestMatchers("/renewable-energy/**").hasRole("ADMIN")
+              .requestMatchers("/energy-types/**").hasRole("ADMIN")
+              .requestMatchers("/countries/**").hasRole("ADMIN")
               .anyRequest().authenticated();
         })
         .addFilter(new JwtAuthenticationFilter(authenticationManager()))

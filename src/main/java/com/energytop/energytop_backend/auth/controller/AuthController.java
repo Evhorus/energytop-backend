@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +14,7 @@ import com.energytop.energytop_backend.auth.dto.CreateUserDto;
 import com.energytop.energytop_backend.auth.dto.TokenValidationRequestDto;
 import com.energytop.energytop_backend.auth.dto.UpdateUserDto;
 import com.energytop.energytop_backend.auth.dto.UserDto;
-import com.energytop.energytop_backend.auth.service.AuthService;
+import com.energytop.energytop_backend.auth.services.AuthService;
 
 import jakarta.validation.Valid;
 
@@ -46,7 +45,7 @@ public class AuthController {
   }
 
   @PostMapping()
-  public ResponseEntity<?> create(@Valid @RequestBody CreateUserDto createUserDto) {
+  public ResponseEntity<String> create(@Valid @RequestBody CreateUserDto createUserDto) {
     authService.create(createUserDto);
     return ResponseEntity.status(HttpStatus.CREATED).body("Usuario creado correctamente");
   }
@@ -62,6 +61,7 @@ public class AuthController {
     authService.remove(id);
     return ResponseEntity.status(HttpStatus.OK).body("Usuario eliminado");
   }
+
 
   @PostMapping("/validate-token")
   public ResponseEntity<?> validateToken(@RequestBody TokenValidationRequestDto tokenValidationRequestDto) {

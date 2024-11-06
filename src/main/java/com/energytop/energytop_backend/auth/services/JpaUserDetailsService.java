@@ -1,4 +1,4 @@
-package com.energytop.energytop_backend.auth.service;
+package com.energytop.energytop_backend.auth.services;
 
 import java.util.List;
 import java.util.Optional;

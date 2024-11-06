@@ -1,4 +1,4 @@
-package com.energytop.energytop_backend.renewableEnergy.entities;
+package com.energytop.energytop_backend.energyTypes.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,19 +18,16 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "countries")
-public class Country {
+@Table(name = "energy_types")
+public class EnergyType {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "country_name")
-  private String countryName;
+  @Column(name = "energy_name")
+  private String energyName;
 
-  @Column(name = "country_code")
-  private String CountryCode;
-
-  @Column(name = "population")
-  private Long population;
-
+  @Column(name = "source")
+  private String source;
 }

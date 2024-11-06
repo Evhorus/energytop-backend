@@ -1,9 +1,7 @@
-package com.energytop.energytop_backend.auth.service;
+package com.energytop.energytop_backend.auth.services;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.http.ResponseEntity;
 
 import com.energytop.energytop_backend.auth.dto.CreateUserDto;
 import com.energytop.energytop_backend.auth.dto.TokenValidationRequestDto;

@@ -10,14 +10,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.energytop.energytop_backend.countries.entities.Country;
+import com.energytop.energytop_backend.countries.repository.CountryRepository;
+import com.energytop.energytop_backend.energyTypes.entities.EnergyType;
+import com.energytop.energytop_backend.energyTypes.repository.EnergyTypeRepository;
 import com.energytop.energytop_backend.renewableEnergy.dto.CountryEnergyTotalDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.PaginatedResponseDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergyPercentageDto;
-import com.energytop.energytop_backend.renewableEnergy.entities.Country;
-import com.energytop.energytop_backend.renewableEnergy.entities.EnergyType;
 import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergies;
-import com.energytop.energytop_backend.renewableEnergy.repository.CountryRepository;
-import com.energytop.energytop_backend.renewableEnergy.repository.EnergyTypeRepository;
 import com.energytop.energytop_backend.renewableEnergy.repository.RenewableEnergiesRepository;
 
 @Service
