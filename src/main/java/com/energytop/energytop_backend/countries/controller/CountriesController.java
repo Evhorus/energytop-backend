@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
 import com.energytop.energytop_backend.countries.dto.CreateCountryDto;
 import com.energytop.energytop_backend.countries.dto.UpdateCountryDto;
 import com.energytop.energytop_backend.countries.entities.Country;
@@ -30,9 +33,9 @@ public class CountriesController {
   private CountriesService countriesService;
 
   @GetMapping
-  public ResponseEntity<List<Country>> getAllCountries() {
-    List<Country> countries = countriesService.findAll();
-    return ResponseEntity.status(HttpStatus.OK).body(countries);
+  public PaginatedResponseDto<Country> getAllCountries(@PageableDefault(size = 10) Pageable pageable) {
+    return countriesService.findAll(pageable);
+
   }
 
   @GetMapping("/{id}")

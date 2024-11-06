@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
 import com.energytop.energytop_backend.countries.entities.Country;
 import com.energytop.energytop_backend.energyTypes.entities.EnergyType;
 import com.energytop.energytop_backend.renewableEnergy.dto.CountryEnergyTotalDto;
-import com.energytop.energytop_backend.renewableEnergy.dto.PaginatedResponseDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergyPercentageDto;
 import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergies;
 import com.energytop.energytop_backend.renewableEnergy.service.RenewableEnergyService;

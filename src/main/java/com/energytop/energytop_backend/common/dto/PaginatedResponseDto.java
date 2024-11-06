@@ -1,4 +1,4 @@
-package com.energytop.energytop_backend.renewableEnergy.dto;
+package com.energytop.energytop_backend.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

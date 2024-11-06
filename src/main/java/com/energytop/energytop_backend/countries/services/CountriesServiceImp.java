@@ -1,12 +1,12 @@
 package com.energytop.energytop_backend.countries.services;
-
-import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
 import com.energytop.energytop_backend.countries.dto.CreateCountryDto;
 import com.energytop.energytop_backend.countries.dto.UpdateCountryDto;
 import com.energytop.energytop_backend.countries.entities.Country;
@@ -21,11 +21,23 @@ public class CountriesServiceImp implements CountriesService {
   CountryRepository countryRepository;
 
   @Override
-  public List<Country> findAll() {
-    return countryRepository.findAll();
+  @Transactional
+  public PaginatedResponseDto<Country> findAll(Pageable pageable) {
+    Page<Country> page = countryRepository.findAll(pageable);
+    return new PaginatedResponseDto<>(page.getContent(),
+        page.getNumber(),
+        page.getSize(),
+        page.getTotalElements(),
+        page.getTotalPages(),
+        page.isFirst(),
+        page.isLast(),
+        page.isEmpty(),
+        pageable,
+        pageable.getSort());
   }
 
   @Override
+  @Transactional
   public Optional<Country> findById(Long id) {
     return countryRepository.findById(id);
   }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
 import com.energytop.energytop_backend.energyTypes.dto.CreateEnergyTypeDto;
 import com.energytop.energytop_backend.energyTypes.dto.UpdateEnergyTypeDto;
 import com.energytop.energytop_backend.energyTypes.entities.EnergyType;
@@ -30,9 +33,8 @@ public class EnergyTypesController {
   EnergyTypesService energyTypesService;
 
   @GetMapping
-  public ResponseEntity<List<EnergyType>> getAllEnergyTypes() {
-    List<EnergyType> energyTypes = energyTypesService.findAll();
-    return ResponseEntity.status(HttpStatus.OK).body(energyTypes);
+  public PaginatedResponseDto<EnergyType> getAllEnergyTypes(@PageableDefault(size = 10) Pageable pageable) {
+    return energyTypesService.findAll(pageable);
   }
 
   @GetMapping("/{id}")
