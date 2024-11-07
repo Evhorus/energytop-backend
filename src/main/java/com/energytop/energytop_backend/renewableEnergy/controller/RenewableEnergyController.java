@@ -3,7 +3,6 @@ package com.energytop.energytop_backend.renewableEnergy.controller;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -18,9 +17,10 @@ import com.energytop.energytop_backend.countries.entities.Country;
 import com.energytop.energytop_backend.energyTypes.entities.EnergyType;
 import com.energytop.energytop_backend.renewableEnergy.dto.CountryEnergyTotalDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.CreateRenewableEnergyDto;
+import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergiesSearchDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergyPercentageDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.UpdateRenewableEnergyDto;
-import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergy;
+import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergies;
 import com.energytop.energytop_backend.renewableEnergy.service.RenewableEnergyServiceImp;
 
 import jakarta.validation.Valid;
@@ -33,23 +33,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/renewable-energy")
+@RequestMapping("/renewable-energies")
 public class RenewableEnergyController {
 
   @Autowired
   public RenewableEnergyServiceImp renewableEnergyService;
 
   @GetMapping
-  public PaginatedResponseDto<RenewableEnergy> findAll(@PageableDefault(size = 10) Pageable pageable) {
+  public PaginatedResponseDto<RenewableEnergies> findAll(@PageableDefault(size = 10) Pageable pageable) {
     return renewableEnergyService.findAll(pageable);
   }
 
- @GetMapping("/{id}")
-  public ResponseEntity<Optional<RenewableEnergy>> getRenewableEnergyId(@PathVariable Long id) {
-    Optional<RenewableEnergy> renewableEnery = renewableEnergyService.findById(id);
+  @GetMapping("/{id}")
+  public ResponseEntity<Optional<RenewableEnergies>> getRenewableEnergyId(@PathVariable Long id) {
+    Optional<RenewableEnergies> renewableEnery = renewableEnergyService.findById(id);
     return ResponseEntity.status(HttpStatus.OK).body(renewableEnery);
   }
-
 
   @PostMapping
   public ResponseEntity<String> createRenewableEnergy(
@@ -67,10 +66,10 @@ public class RenewableEnergyController {
   }
 
   @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteRenewableEnergy(@PathVariable Long id) {
-        renewableEnergyService.remove(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Energia renovable eliminada correctamente");
-    }
+  public ResponseEntity<String> deleteRenewableEnergy(@PathVariable Long id) {
+    renewableEnergyService.remove(id);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Energia renovable eliminada correctamente");
+  }
 
   @GetMapping("/total-production")
   public List<CountryEnergyTotalDto> getTotalRenewableEnergyBySourceAndCountry(
@@ -95,8 +94,18 @@ public class RenewableEnergyController {
   }
 
   @PostMapping("/seed/renewable-energies")
-  public List<RenewableEnergy> saveRenewableEnergies(@RequestBody List<RenewableEnergy> countries) {
+  public List<RenewableEnergies> saveRenewableEnergies(@RequestBody List<RenewableEnergies> countries) {
     return renewableEnergyService.saveRenewableEnergies(countries);
+  }
+
+  @GetMapping("/search")
+  public List<RenewableEnergies> searchRenewableEnergies(@RequestParam String searchTerm,
+      @RequestParam String searchBy) {
+    RenewableEnergiesSearchDto searchDto = new RenewableEnergiesSearchDto();
+    searchDto.setSearchTerm(searchTerm);
+    searchDto.setSearchBy(searchBy);
+
+    return renewableEnergyService.searchRenewableEnergies(searchDto);
   }
 
 }

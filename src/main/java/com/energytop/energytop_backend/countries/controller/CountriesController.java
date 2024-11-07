@@ -67,14 +67,9 @@ public class CountriesController {
 
   @GetMapping("/search")
   public List<Country> searchCountries(@RequestParam String searchTerm, @RequestParam String searchBy) {
-    // Crear un DTO con los parámetros recibidos
     CountrySearchDTO searchDTO = new CountrySearchDTO();
     searchDTO.setSearchTerm(searchTerm);
     searchDTO.setSearchBy(searchBy);
-
-    System.out.println(searchTerm);
-
-    // Pasar el DTO al servicio para la búsqueda
     return countriesService.searchCountries(searchDTO);
   }
 

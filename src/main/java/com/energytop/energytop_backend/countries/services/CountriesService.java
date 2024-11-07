@@ -20,7 +20,7 @@ public interface CountriesService {
 
   String update(Long id, UpdateCountryDto updateCountryDto);
 
-   List<Country> searchCountries(CountrySearchDTO countrySearchDTO);
+  List<Country> searchCountries(CountrySearchDTO countrySearchDTO);
 
   void remove(Long id);  
 }

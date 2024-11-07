@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
+import com.energytop.energytop_backend.common.helpers.StringUtils;
 import com.energytop.energytop_backend.countries.dto.CountrySearchDTO;
 import com.energytop.energytop_backend.countries.dto.CreateCountryDto;
 import com.energytop.energytop_backend.countries.dto.UpdateCountryDto;
@@ -48,11 +49,25 @@ public class CountriesServiceImp implements CountriesService {
   @Override
   @Transactional
   public Country create(CreateCountryDto createCountryDto) {
+    // Verificar si ya existe un país con el mismo nombre (o código, dependiendo de
+    // tu lógica)
+    Optional<Country> existingCountry = countryRepository.findByCountryName(createCountryDto.getCountryName());
+    if (existingCountry.isPresent()) {
+      throw new IllegalArgumentException("Ya existe un país con ese nombre");
+    }
+
+    // Crear una nueva entidad Country
     Country country = new Country();
-    country.setCountryName(createCountryDto.getCountryName());
-    country.setCountryCode(createCountryDto.getCountryCode());
+    country.setCountryName(createCountryDto.getCountryName().trim());
+    country.setCountryCode(createCountryDto.getCountryCode().trim());
     country.setPopulation(createCountryDto.getPopulation());
-    return countryRepository.save(country);
+
+    // Guardar la nueva entidad en la base de datos
+    Country savedCountry = countryRepository.save(country);
+
+    // Retornar el país guardado (si deseas devolver un DTO en lugar de la entidad,
+    // puedes mapearlo aquí)
+    return savedCountry;
   }
 
   @Override
@@ -96,12 +111,14 @@ public class CountriesServiceImp implements CountriesService {
   @Override
   @Transactional
   public List<Country> searchCountries(CountrySearchDTO searchDTO) {
-    // Obtener los parámetros de búsqueda desde el DTO
-    String searchTerm = searchDTO.getSearchTerm();
+    String searchTerm = StringUtils.removeAccents(searchDTO.getSearchTerm()).toLowerCase();
     String searchBy = searchDTO.getSearchBy();
 
-    // Realizar la consulta en el repositorio usando los parámetros
-    return countryRepository.searchCountries(searchTerm, searchBy);
+    if ("countryName".equalsIgnoreCase(searchBy)) {
+      List<Country> countries = countryRepository.findByCountryNameStartingWithIgnoreCase(searchTerm);
+      return countries;
+    }
+    throw new IllegalArgumentException("El campo de búsqueda '" + searchBy + "' no es válido.");
   }
 
 }

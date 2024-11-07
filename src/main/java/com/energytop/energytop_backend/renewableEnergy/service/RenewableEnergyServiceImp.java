@@ -1,5 +1,6 @@
 package com.energytop.energytop_backend.renewableEnergy.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,17 +13,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
+import com.energytop.energytop_backend.common.helpers.StringUtils;
 import com.energytop.energytop_backend.countries.entities.Country;
 import com.energytop.energytop_backend.countries.repository.CountryRepository;
 import com.energytop.energytop_backend.energyTypes.entities.EnergyType;
 import com.energytop.energytop_backend.energyTypes.repository.EnergyTypeRepository;
 import com.energytop.energytop_backend.renewableEnergy.dto.CountryEnergyTotalDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.CreateRenewableEnergyDto;
+import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergiesSearchDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergyPercentageDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.UpdateRenewableEnergyDto;
-import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergy;
+import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergies;
 import com.energytop.energytop_backend.renewableEnergy.repository.RenewableEnergyRepository;
-
 
 @Service
 public class RenewableEnergyServiceImp implements RenewableEnergyService {
@@ -41,8 +43,8 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
    */
 
   @Transactional
-  public PaginatedResponseDto<RenewableEnergy> findAll(Pageable pageable) {
-    Page<RenewableEnergy> page = renewableEnergiesRepository.findAll(pageable);
+  public PaginatedResponseDto<RenewableEnergies> findAll(Pageable pageable) {
+    Page<RenewableEnergies> page = renewableEnergiesRepository.findAll(pageable);
     return new PaginatedResponseDto<>(
         page.getContent(),
         page.getNumber(),
@@ -56,6 +58,31 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
         pageable.getSort());
   }
 
+  @Override
+  @Transactional
+  public List<RenewableEnergies> searchRenewableEnergies(RenewableEnergiesSearchDto renewableEnergiesSearchDto) {
+    String searchTerm = StringUtils.removeAccents(renewableEnergiesSearchDto.getSearchTerm()).toLowerCase();
+    String searchBy = renewableEnergiesSearchDto.getSearchBy();
+
+    List<RenewableEnergies> results = new ArrayList<>();
+
+    if ("countryName".equalsIgnoreCase(searchBy)) {
+      List<Country> countries = countryRepository.findByCountryNameStartingWithIgnoreCase(searchTerm);
+      for (Country country : countries) {
+        results.addAll(renewableEnergiesRepository.findByCountryId(country.getId()));
+      }
+
+    } else if ("energyName".equalsIgnoreCase(searchBy)) {
+      List<EnergyType> energyTypes = energyTypeRepository.findByEnergyNameStartingWithIgnoreCase(searchTerm);
+      for (EnergyType energyType : energyTypes) {
+        results.addAll(renewableEnergiesRepository.findByEnergyTypeId(energyType.getId()));
+      }
+
+    }
+
+    return results;
+  }
+
   /*
    * Obtener la producción total de energía renovable por tipo de fuente en un
    * año específico, agrupada por regiones
@@ -64,14 +91,14 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
   @Transactional
   public List<CountryEnergyTotalDto> getTotalRenewableEnergyBySourceAndCountry(String energyName, int year) {
 
-    List<RenewableEnergy> renewableEnergies = renewableEnergiesRepository
+    List<RenewableEnergies> renewableEnergies = renewableEnergiesRepository
         .findByEnergyType_EnergyNameAndYear(energyName, year);
 
     return renewableEnergies.stream()
         .collect(
             Collectors.groupingBy(
                 energy -> energy.getCountry().getCountryName(),
-                Collectors.summingDouble(RenewableEnergy::getProduction)))
+                Collectors.summingDouble(RenewableEnergies::getProduction)))
         .entrySet().stream()
         .map(entry -> new CountryEnergyTotalDto(entry.getKey(), entry.getValue(), energyName, year))
         .collect(Collectors.toList());
@@ -90,15 +117,15 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
   @Transactional
   public List<RenewableEnergyPercentageDto> calculateRenewableEnergyPercentageByRegion() {
 
-    List<RenewableEnergy> renewableEnergies = renewableEnergiesRepository.findAll();
+    List<RenewableEnergies> renewableEnergies = renewableEnergiesRepository.findAll();
 
     Map<String, Double> renewableProductionByCountry = renewableEnergies.stream()
         .collect(Collectors.groupingBy(energy -> energy.getCountry().getCountryName(),
-            Collectors.summingDouble(RenewableEnergy::getProduction)));
+            Collectors.summingDouble(RenewableEnergies::getProduction)));
 
     Map<String, Double> totalConsumptionByCountry = renewableEnergies.stream()
         .collect(Collectors.groupingBy(energy -> energy.getCountry().getCountryName(),
-            Collectors.summingDouble(RenewableEnergy::getConsumption)));
+            Collectors.summingDouble(RenewableEnergies::getConsumption)));
 
     // Calcular el porcentaje de energía renovable por país
     return totalConsumptionByCountry.keySet().stream()
@@ -126,13 +153,13 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
 
   @Override
   @Transactional
-  public Optional<RenewableEnergy> findById(Long id) {
+  public Optional<RenewableEnergies> findById(Long id) {
     return renewableEnergiesRepository.findById(id);
   }
 
   @Override
   @Transactional
-  public RenewableEnergy create(CreateRenewableEnergyDto createRenewableEnergyDto) {
+  public RenewableEnergies create(CreateRenewableEnergyDto createRenewableEnergyDto) {
     // Validación y asignación del tipo de energía
     EnergyType energyType = null;
     if (createRenewableEnergyDto.getEnergyType() != null) {
@@ -150,7 +177,7 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
     }
 
     // Crear un nuevo objeto RenewableEnergy y asignar valores del DTO
-    RenewableEnergy renewableEnergy = new RenewableEnergy();
+    RenewableEnergies renewableEnergy = new RenewableEnergies();
     renewableEnergy.setConsumption(createRenewableEnergyDto.getConsumption());
     renewableEnergy.setProduction(createRenewableEnergyDto.getProduction());
     renewableEnergy.setYear(createRenewableEnergyDto.getYear());
@@ -165,7 +192,7 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
     // Buscar la entidad RenewableEnergy existente por su ID
 
     System.out.println(updateRenewableEnergyDto.getEnergyType());
-    RenewableEnergy renewableEnergy = renewableEnergiesRepository.findById(id)
+    RenewableEnergies renewableEnergy = renewableEnergiesRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("RenewableEnergy not found"));
 
     // Validación y asignación del tipo de energía (solo si se pasa un nuevo valor
@@ -204,7 +231,7 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
   @Override
   @Transactional
   public void remove(Long id) {
-    RenewableEnergy renewableEnergy = renewableEnergiesRepository.findById(id)
+    RenewableEnergies renewableEnergy = renewableEnergiesRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("RenewableEnergy not found"));
     renewableEnergiesRepository.delete(renewableEnergy);
   }
@@ -221,8 +248,8 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
   }
 
   @Transactional
-  public List<RenewableEnergy> saveRenewableEnergies(List<RenewableEnergy> renewableEnergiesList) {
-    for (RenewableEnergy renewableEnergy : renewableEnergiesList) {
+  public List<RenewableEnergies> saveRenewableEnergies(List<RenewableEnergies> renewableEnergiesList) {
+    for (RenewableEnergies renewableEnergy : renewableEnergiesList) {
       if (renewableEnergy.getEnergyType() != null && renewableEnergy.getEnergyType().getId() != null) {
         Long energyTypeId = renewableEnergy.getEnergyType().getId();
         EnergyType energyType = energyTypeRepository.findById(energyTypeId)

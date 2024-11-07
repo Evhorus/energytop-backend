@@ -23,8 +23,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "renewable_energy")
-public class RenewableEnergy {
+@Table(name = "renewable_energies")
+public class RenewableEnergies {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
