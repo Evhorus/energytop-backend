@@ -9,8 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
+import com.energytop.energytop_backend.common.dto.SearchDto;
 import com.energytop.energytop_backend.common.helpers.StringUtils;
-import com.energytop.energytop_backend.countries.dto.CountrySearchDTO;
 import com.energytop.energytop_backend.countries.dto.CreateCountryDto;
 import com.energytop.energytop_backend.countries.dto.UpdateCountryDto;
 import com.energytop.energytop_backend.countries.entities.Country;
@@ -110,15 +110,17 @@ public class CountriesServiceImp implements CountriesService {
 
   @Override
   @Transactional
-  public List<Country> searchCountries(CountrySearchDTO searchDTO) {
+  public List<Country> searchCountries(SearchDto searchDTO) {
     String searchTerm = StringUtils.removeAccents(searchDTO.getSearchTerm()).toLowerCase();
     String searchBy = searchDTO.getSearchBy();
 
-    if ("countryName".equalsIgnoreCase(searchBy)) {
-      List<Country> countries = countryRepository.findByCountryNameStartingWithIgnoreCase(searchTerm);
-      return countries;
+    if ("countryName".equals(searchBy)) {
+      return countryRepository.searchByCountryName(searchTerm);
+    } else if ("countryCode".equals(searchBy)) {
+      return countryRepository.findByCountryCodeStartingWithIgnoreCase(searchTerm);
+    } else {
+      throw new IllegalArgumentException("El campo de búsqueda '" + searchBy + "' no es válido.");
     }
-    throw new IllegalArgumentException("El campo de búsqueda '" + searchBy + "' no es válido.");
   }
 
 }

@@ -1,8 +1,11 @@
 package com.energytop.energytop_backend.energyTypes.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
+import com.energytop.energytop_backend.common.dto.SearchDto;
+import com.energytop.energytop_backend.common.helpers.StringUtils;
 import com.energytop.energytop_backend.energyTypes.dto.CreateEnergyTypeDto;
 import com.energytop.energytop_backend.energyTypes.dto.UpdateEnergyTypeDto;
 import com.energytop.energytop_backend.energyTypes.entities.EnergyType;
@@ -85,5 +88,17 @@ public class EnergyTypesServiceImpl implements EnergyTypesService {
         }
 
         energyTypeRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EnergyType> searchEnergyTypes(SearchDto searchDto) {
+        String searchTerm = StringUtils.removeAccents(searchDto.getSearchTerm()).toLowerCase();
+        String searchBy = searchDto.getSearchBy();
+
+        if ("energyName".equals(searchBy)) {
+            return energyTypeRepository.searchByEnergyName(searchTerm);
+        }
+        throw new IllegalArgumentException("El campo de búsqueda '" + searchBy + "' no es válido.");
     }
 }

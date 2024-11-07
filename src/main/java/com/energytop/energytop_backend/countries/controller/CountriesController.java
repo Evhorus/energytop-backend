@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
-import com.energytop.energytop_backend.countries.dto.CountrySearchDTO;
+import com.energytop.energytop_backend.common.dto.SearchDto;
 import com.energytop.energytop_backend.countries.dto.CreateCountryDto;
 import com.energytop.energytop_backend.countries.dto.UpdateCountryDto;
 import com.energytop.energytop_backend.countries.entities.Country;
@@ -67,7 +67,7 @@ public class CountriesController {
 
   @GetMapping("/search")
   public List<Country> searchCountries(@RequestParam String searchTerm, @RequestParam String searchBy) {
-    CountrySearchDTO searchDTO = new CountrySearchDTO();
+    SearchDto searchDTO = new SearchDto();
     searchDTO.setSearchTerm(searchTerm);
     searchDTO.setSearchBy(searchBy);
     return countriesService.searchCountries(searchDTO);

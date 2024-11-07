@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
+import com.energytop.energytop_backend.common.dto.SearchDto;
 import com.energytop.energytop_backend.energyTypes.dto.CreateEnergyTypeDto;
 import com.energytop.energytop_backend.energyTypes.dto.UpdateEnergyTypeDto;
 import com.energytop.energytop_backend.energyTypes.entities.EnergyType;
 import com.energytop.energytop_backend.energyTypes.services.EnergyTypesService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/energy-types")
@@ -32,10 +34,18 @@ public class EnergyTypesController {
   @Autowired
   EnergyTypesService energyTypesService;
 
-
   @GetMapping
   public PaginatedResponseDto<EnergyType> getAllEnergyTypes(@PageableDefault(size = 10) Pageable pageable) {
     return energyTypesService.findAll(pageable);
+  }
+
+  @GetMapping("search")
+  public List<EnergyType> searchEnergyTypes(@RequestParam String searchTerm, @RequestParam String searchBy) {
+
+    SearchDto searchDto = new SearchDto();
+    searchDto.setSearchTerm(searchTerm);
+    searchDto.setSearchBy(searchBy);
+    return energyTypesService.searchEnergyTypes(searchDto);
   }
 
   @GetMapping("/{id}")

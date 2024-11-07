@@ -15,6 +15,7 @@ import com.energytop.energytop_backend.auth.dto.TokenValidationRequestDto;
 import com.energytop.energytop_backend.auth.dto.UpdateUserDto;
 import com.energytop.energytop_backend.auth.dto.UserDto;
 import com.energytop.energytop_backend.auth.services.AuthService;
+import com.energytop.energytop_backend.common.dto.SearchDto;
 
 import jakarta.validation.Valid;
 
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @CrossOrigin(originPatterns = "*")
 @RestController
@@ -44,6 +46,14 @@ public class AuthController {
     return ResponseEntity.status(HttpStatus.OK).body(user);
   }
 
+  @GetMapping("search")
+  public List<UserDto> searchUsers(@RequestParam String searchTerm, @RequestParam String searchBy) {
+    SearchDto searchDto = new SearchDto();
+    searchDto.setSearchTerm(searchTerm);
+    searchDto.setSearchBy(searchBy);
+    return authService.searchUsers(searchDto);
+  }
+
   @PostMapping()
   public ResponseEntity<String> create(@Valid @RequestBody CreateUserDto createUserDto) {
     authService.create(createUserDto);
@@ -56,12 +66,18 @@ public class AuthController {
     return ResponseEntity.status(HttpStatus.OK).body("Usuario actualizado correctamente");
   }
 
+  @PatchMapping("/profile/{email}")
+  public ResponseEntity<String> updateProfile(@PathVariable String email, @RequestBody UpdateUserDto updateUserDto) {
+    System.out.println(email);
+    authService.updateProfile(email, updateUserDto);
+    return ResponseEntity.status(HttpStatus.OK).body("Usuario actualizado correctamente");
+  }
+
   @DeleteMapping("/{id}")
   public ResponseEntity<?> remove(@PathVariable Long id) {
     authService.remove(id);
     return ResponseEntity.status(HttpStatus.OK).body("Usuario eliminado");
   }
-
 
   @PostMapping("/validate-token")
   public ResponseEntity<?> validateToken(@RequestBody TokenValidationRequestDto tokenValidationRequestDto) {

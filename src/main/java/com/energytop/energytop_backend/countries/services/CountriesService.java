@@ -2,11 +2,9 @@ package com.energytop.energytop_backend.countries.services;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.domain.Pageable;
-
 import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
-import com.energytop.energytop_backend.countries.dto.CountrySearchDTO;
+import com.energytop.energytop_backend.common.dto.SearchDto;
 import com.energytop.energytop_backend.countries.dto.CreateCountryDto;
 import com.energytop.energytop_backend.countries.dto.UpdateCountryDto;
 import com.energytop.energytop_backend.countries.entities.Country;
@@ -16,11 +14,11 @@ public interface CountriesService {
 
   Optional<Country> findById(Long id);
 
+  List<Country> searchCountries(SearchDto searchDto);
+
   Country create(CreateCountryDto createCountryDto);
 
   String update(Long id, UpdateCountryDto updateCountryDto);
 
-  List<Country> searchCountries(CountrySearchDTO countrySearchDTO);
-
-  void remove(Long id);  
+  void remove(Long id);
 }

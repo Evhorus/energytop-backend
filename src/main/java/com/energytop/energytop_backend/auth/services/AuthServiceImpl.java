@@ -17,6 +17,8 @@ import com.energytop.energytop_backend.auth.entities.User;
 import com.energytop.energytop_backend.auth.repository.RoleRepository;
 import com.energytop.energytop_backend.auth.repository.UserRepository;
 import com.energytop.energytop_backend.common.config.auth.TokenJwtConfig;
+import com.energytop.energytop_backend.common.dto.SearchDto;
+import com.energytop.energytop_backend.common.helpers.StringUtils;
 
 import io.jsonwebtoken.Jwts;
 import jakarta.persistence.EntityNotFoundException;
@@ -71,16 +73,20 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  @Transactional()
+  @Transactional
   public UserDto create(CreateUserDto createUserDto) {
-    Optional<User> userDb = userRepository.findByEmail(createUserDto.getEmail());
+
+    String emailNormalized = createUserDto.getEmail().trim().toLowerCase();
+
+    Optional<User> userDb = userRepository.findByEmail(emailNormalized);
     if (userDb.isPresent()) {
       throw new IllegalArgumentException("Ya existe un perfil con ese email");
     }
+
     User user = new User();
     user.setFirstName(createUserDto.getFirstName().trim());
     user.setLastName(createUserDto.getLastName().trim());
-    user.setEmail(createUserDto.getEmail().trim());
+    user.setEmail(emailNormalized); // Guardar el correo en minúsculas
     user.setPassword(passwordEncoder.encode(createUserDto.getPassword()));
 
     roleRepository.findByName("ROLE_USER").ifPresent(role -> user.setRoles(List.of(role)));
@@ -108,7 +114,8 @@ public class AuthServiceImpl implements AuthService {
       userDbToEdit.setLastName(updateUserDto.getLastName().trim());
     }
     if (updateUserDto.getEmail() != null) {
-      userDbToEdit.setEmail(updateUserDto.getEmail().trim());
+      String emailNormalized = updateUserDto.getEmail().trim().toLowerCase();
+      userDbToEdit.setEmail(emailNormalized);
     }
     if (updateUserDto.getPassword() != null) {
       userDbToEdit.setPassword(passwordEncoder.encode(updateUserDto.getPassword()));
@@ -145,6 +152,51 @@ public class AuthServiceImpl implements AuthService {
       System.out.println(e);
     }
     return false;
+  }
+
+  @Override
+  @Transactional
+  public String updateProfile(String email, UpdateUserDto updateUserDto) {
+    Optional<User> userToUpdate = userRepository.findByEmail(email);
+
+    if (userToUpdate.isEmpty()) {
+      throw new EntityNotFoundException("No existe el usuario con el identificador: " + email);
+    }
+
+    User userDbToEdit = userToUpdate.get();
+
+    if (updateUserDto.getFirstName() != null) {
+      userDbToEdit.setFirstName(updateUserDto.getFirstName().trim());
+    }
+    if (updateUserDto.getLastName() != null) {
+      userDbToEdit.setLastName(updateUserDto.getLastName().trim());
+    }
+    if (updateUserDto.getEmail() != null) {
+      String emailNormalized = updateUserDto.getEmail().trim().toLowerCase();
+      userDbToEdit.setEmail(emailNormalized);
+    }
+    if (updateUserDto.getPassword() != null) {
+      userDbToEdit.setPassword(passwordEncoder.encode(updateUserDto.getPassword()));
+    }
+
+    userRepository.save(userDbToEdit);
+    return "El usuario se actualizado correctamente";
+
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<UserDto> searchUsers(SearchDto searchDto) {
+
+    String searchTerm = StringUtils.removeAccents(searchDto.getSearchTerm()).toLowerCase();
+    String searchBy = searchDto.getSearchBy();
+
+    if ("email".equalsIgnoreCase(searchBy)) {
+      List<User> usersDb = userRepository.findByEmailStartingWithIgnoreCase(searchTerm);
+
+      return usersDb.stream().map(user -> UserDtoMapper.builder().setUser(user).build()).collect(Collectors.toList());
+    }
+    throw new IllegalArgumentException("El campo de búsqueda '" + searchBy + "' no es válido.");
   }
 
 }

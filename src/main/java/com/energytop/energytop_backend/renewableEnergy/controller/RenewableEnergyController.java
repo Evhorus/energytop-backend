@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
+import com.energytop.energytop_backend.common.dto.SearchDto;
 import com.energytop.energytop_backend.countries.entities.Country;
 import com.energytop.energytop_backend.energyTypes.entities.EnergyType;
 import com.energytop.energytop_backend.renewableEnergy.dto.CountryEnergyTotalDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.CreateRenewableEnergyDto;
-import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergiesSearchDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergyPercentageDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.UpdateRenewableEnergyDto;
 import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergies;
@@ -101,7 +101,7 @@ public class RenewableEnergyController {
   @GetMapping("/search")
   public List<RenewableEnergies> searchRenewableEnergies(@RequestParam String searchTerm,
       @RequestParam String searchBy) {
-    RenewableEnergiesSearchDto searchDto = new RenewableEnergiesSearchDto();
+    SearchDto searchDto = new SearchDto();
     searchDto.setSearchTerm(searchTerm);
     searchDto.setSearchBy(searchBy);
 

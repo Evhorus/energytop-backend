@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
+import com.energytop.energytop_backend.common.dto.SearchDto;
 import com.energytop.energytop_backend.common.helpers.StringUtils;
 import com.energytop.energytop_backend.countries.entities.Country;
 import com.energytop.energytop_backend.countries.repository.CountryRepository;
@@ -20,7 +21,6 @@ import com.energytop.energytop_backend.energyTypes.entities.EnergyType;
 import com.energytop.energytop_backend.energyTypes.repository.EnergyTypeRepository;
 import com.energytop.energytop_backend.renewableEnergy.dto.CountryEnergyTotalDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.CreateRenewableEnergyDto;
-import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergiesSearchDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.RenewableEnergyPercentageDto;
 import com.energytop.energytop_backend.renewableEnergy.dto.UpdateRenewableEnergyDto;
 import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergies;
@@ -60,20 +60,20 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
 
   @Override
   @Transactional
-  public List<RenewableEnergies> searchRenewableEnergies(RenewableEnergiesSearchDto renewableEnergiesSearchDto) {
-    String searchTerm = StringUtils.removeAccents(renewableEnergiesSearchDto.getSearchTerm()).toLowerCase();
-    String searchBy = renewableEnergiesSearchDto.getSearchBy();
+  public List<RenewableEnergies> searchRenewableEnergies(SearchDto searchDto) {
+    String searchTerm = StringUtils.removeAccents(searchDto.getSearchTerm()).toLowerCase();
+    String searchBy = searchDto.getSearchBy();
 
     List<RenewableEnergies> results = new ArrayList<>();
 
-    if ("countryName".equalsIgnoreCase(searchBy)) {
-      List<Country> countries = countryRepository.findByCountryNameStartingWithIgnoreCase(searchTerm);
+    if ("countryName".equals(searchBy)) {
+      List<Country> countries = countryRepository.searchByCountryName(searchTerm);
       for (Country country : countries) {
         results.addAll(renewableEnergiesRepository.findByCountryId(country.getId()));
       }
 
-    } else if ("energyName".equalsIgnoreCase(searchBy)) {
-      List<EnergyType> energyTypes = energyTypeRepository.findByEnergyNameStartingWithIgnoreCase(searchTerm);
+    } else if ("energyName".equals(searchBy)) {
+      List<EnergyType> energyTypes = energyTypeRepository.searchByEnergyName(searchTerm);
       for (EnergyType energyType : energyTypes) {
         results.addAll(renewableEnergiesRepository.findByEnergyTypeId(energyType.getId()));
       }

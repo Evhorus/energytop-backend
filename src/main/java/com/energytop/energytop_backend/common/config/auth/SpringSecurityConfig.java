@@ -48,10 +48,11 @@ public class SpringSecurityConfig {
 
         .authorizeHttpRequests(http -> {
           http.requestMatchers(HttpMethod.POST, "/users/validate-token").permitAll()
-              .requestMatchers(HttpMethod.GET, "/users/**").permitAll()  
               .requestMatchers(HttpMethod.GET, "/renewable-energies/**").permitAll()  
               .requestMatchers(HttpMethod.GET, "/energy-types/**").permitAll()  
               .requestMatchers(HttpMethod.GET, "/countries/**").permitAll()  
+              .requestMatchers(HttpMethod.GET, "/users/**").permitAll()  
+              .requestMatchers(HttpMethod.PATCH, "/users/profile/**").permitAll()  
               .requestMatchers("/users/**").hasRole("ADMIN")
               .requestMatchers("/renewable-energies/**").hasRole("ADMIN")
               .requestMatchers("/energy-types/**").hasRole("ADMIN")
