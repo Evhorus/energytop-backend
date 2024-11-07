@@ -23,17 +23,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "renewable_energies")
-public class RenewableEnergies {
+@Table(name = "renewable_energy")
+public class RenewableEnergy {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(name = "consumption")
-  private Double consumption; //Consumo 
+  private Double consumption;
 
-  @Column(name = "production")
-  private Double production; // Produccion 
+  @Column(name = "production", columnDefinition =  "DECIMAL(10, 2)")
+  private Double production; 
 
   @Column(name = "year")
   private Integer year;

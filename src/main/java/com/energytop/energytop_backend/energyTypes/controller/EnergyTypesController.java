@@ -32,6 +32,7 @@ public class EnergyTypesController {
   @Autowired
   EnergyTypesService energyTypesService;
 
+
   @GetMapping
   public PaginatedResponseDto<EnergyType> getAllEnergyTypes(@PageableDefault(size = 10) Pageable pageable) {
     return energyTypesService.findAll(pageable);
@@ -59,7 +60,7 @@ public class EnergyTypesController {
   @DeleteMapping("/{id}")
   public ResponseEntity<String> deleteEnergyType(@PathVariable Long id) {
     energyTypesService.remove(id);
-    return ResponseEntity.status(HttpStatus.OK).body("Tipo de energía eliminado correctamente");
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Tipo de energía eliminado correctamente");
   }
 
 }
