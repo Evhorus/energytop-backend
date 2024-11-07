@@ -41,7 +41,6 @@ public class EnergyTypesController {
 
   @GetMapping("search")
   public List<EnergyType> searchEnergyTypes(@RequestParam String searchTerm, @RequestParam String searchBy) {
-
     SearchDto searchDto = new SearchDto();
     searchDto.setSearchTerm(searchTerm);
     searchDto.setSearchBy(searchBy);
