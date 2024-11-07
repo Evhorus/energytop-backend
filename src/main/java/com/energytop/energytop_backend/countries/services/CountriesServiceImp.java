@@ -1,4 +1,6 @@
 package com.energytop.energytop_backend.countries.services;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
+import com.energytop.energytop_backend.countries.dto.CountrySearchDTO;
 import com.energytop.energytop_backend.countries.dto.CreateCountryDto;
 import com.energytop.energytop_backend.countries.dto.UpdateCountryDto;
 import com.energytop.energytop_backend.countries.entities.Country;
@@ -88,6 +91,17 @@ public class CountriesServiceImp implements CountriesService {
     }
 
     countryRepository.deleteById(id);
+  }
+
+  @Override
+  @Transactional
+  public List<Country> searchCountries(CountrySearchDTO searchDTO) {
+    // Obtener los parámetros de búsqueda desde el DTO
+    String searchTerm = searchDTO.getSearchTerm();
+    String searchBy = searchDTO.getSearchBy();
+
+    // Realizar la consulta en el repositorio usando los parámetros
+    return countryRepository.searchCountries(searchTerm, searchBy);
   }
 
 }

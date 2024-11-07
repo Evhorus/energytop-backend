@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.energytop.energytop_backend.common.dto.PaginatedResponseDto;
+import com.energytop.energytop_backend.countries.dto.CountrySearchDTO;
 import com.energytop.energytop_backend.countries.dto.CreateCountryDto;
 import com.energytop.energytop_backend.countries.dto.UpdateCountryDto;
 import com.energytop.energytop_backend.countries.entities.Country;
@@ -61,6 +63,19 @@ public class CountriesController {
   public ResponseEntity<String> deleteCountry(@PathVariable Long id) {
     countriesService.remove(id);
     return ResponseEntity.status(HttpStatus.OK).body("País eliminado correctamente");
+  }
+
+  @GetMapping("/search")
+  public List<Country> searchCountries(@RequestParam String searchTerm, @RequestParam String searchBy) {
+    // Crear un DTO con los parámetros recibidos
+    CountrySearchDTO searchDTO = new CountrySearchDTO();
+    searchDTO.setSearchTerm(searchTerm);
+    searchDTO.setSearchBy(searchBy);
+
+    System.out.println(searchTerm);
+
+    // Pasar el DTO al servicio para la búsqueda
+    return countriesService.searchCountries(searchDTO);
   }
 
 }
