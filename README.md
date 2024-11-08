@@ -66,6 +66,19 @@ CREATE EXTENSION IF NOT EXISTS unaccent;
    - Ejemplo: Realiza una solicitud GET a `http://localhost:8080/api/health` para comprobar el estado de la API.
 
 
+### 6. Conexión con el Frontend
+Para configurar la conexión entre el backend y el frontend, sigue los pasos a continuación:
+1. Clona el archivo .env.template
+   - Clona el archivo .env.template y lo renombras a .env en la raíz de tu proyecto.
+  
+2. Configura la URL del frontend
+   - Abre el archivo .env y localiza la variable FRONT_END_URL.
+   - Asigna a FRONT_END_URL la URL correspondiente a tu proyecto frontend, por ejemplo:
+  
+```
+FRONT_END_URL=http://localhost:5173
+```
+
 ### Ingresar al sistema 
 
   - El usuario por defecto es: admin@admin.com

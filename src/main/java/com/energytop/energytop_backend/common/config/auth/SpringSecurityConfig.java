@@ -22,11 +22,13 @@ import org.springframework.web.filter.CorsFilter;
 import com.energytop.energytop_backend.common.config.auth.filters.JwtAuthenticationFilter;
 import com.energytop.energytop_backend.common.config.auth.filters.JwtValidationFilter;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.lang.Arrays;
 
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig {
+  Dotenv dotenv = Dotenv.load();
 
   @Autowired
   private AuthenticationConfiguration authenticationConfiguration;
@@ -48,12 +50,12 @@ public class SpringSecurityConfig {
 
         .authorizeHttpRequests(http -> {
           http.requestMatchers(HttpMethod.POST, "/users/validate-token").permitAll()
-              .requestMatchers(HttpMethod.GET, "/renewable-energies/**").permitAll()  
-              .requestMatchers(HttpMethod.GET, "/energy-types/**").permitAll()  
-              .requestMatchers(HttpMethod.GET, "/countries/**").permitAll()  
-              .requestMatchers(HttpMethod.GET, "/users/**").permitAll()  
-              .requestMatchers(HttpMethod.GET, "/health").permitAll()  
-              .requestMatchers(HttpMethod.PATCH, "/users/profile/**").permitAll()  
+              .requestMatchers(HttpMethod.GET, "/renewable-energies/**").permitAll()
+              .requestMatchers(HttpMethod.GET, "/energy-types/**").permitAll()
+              .requestMatchers(HttpMethod.GET, "/countries/**").permitAll()
+              .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
+              .requestMatchers(HttpMethod.GET, "/health").permitAll()
+              .requestMatchers(HttpMethod.PATCH, "/users/profile/**").permitAll()
               .requestMatchers("/users/**").hasRole("ADMIN")
               .requestMatchers("/renewable-energies/**").hasRole("ADMIN")
               .requestMatchers("/energy-types/**").hasRole("ADMIN")
@@ -71,7 +73,7 @@ public class SpringSecurityConfig {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList(new String[] { "http://localhost:5173" }));
+    configuration.setAllowedOrigins(Arrays.asList(new String[] { dotenv.get("FRONT_END_URL") }));
     configuration.setAllowedMethods(Arrays.asList(new String[] { "GET", "POST", "PATCH", "DELETE" }));
     configuration.setAllowedHeaders(Arrays.asList(new String[] { "Authorization", "Content-type" }));
     configuration.setAllowCredentials(true);
