@@ -49,24 +49,44 @@ public class CountriesServiceImp implements CountriesService {
   @Override
   @Transactional
   public Country create(CreateCountryDto createCountryDto) {
-    // Verificar si ya existe un país con el mismo nombre (o código, dependiendo de
-    // tu lógica)
-    Optional<Country> existingCountry = countryRepository.findByCountryName(createCountryDto.getCountryName());
+    // Normalizar el nombre del país (eliminando espacios y convirtiendo a
+    // minúsculas para la comparación)
+    String countryNameNormalized = createCountryDto.getCountryName().trim().toLowerCase();
+
+    // Verificar si ya existe un país con el mismo nombre (comparación insensible a
+    // mayúsculas)
+    Optional<Country> existingCountry = countryRepository.findByCountryName(countryNameNormalized);
     if (existingCountry.isPresent()) {
       throw new IllegalArgumentException("Ya existe un país con ese nombre");
     }
 
+    // Convertir el código del país a mayúsculas
+    String countryCodeNormalized = createCountryDto.getCountryCode().trim().toUpperCase();
+
+    // Verificar si ya existe un país con el mismo código (comparación exacta en
+    // mayúsculas)
+    Optional<Country> existingCountryByCode = countryRepository.findByCountryCode(countryCodeNormalized);
+    if (existingCountryByCode.isPresent()) {
+      throw new IllegalArgumentException("Ya existe un país con ese código" + createCountryDto.getCountryCode());
+    }
+
     // Crear una nueva entidad Country
     Country country = new Country();
+
+    // Guardar el nombre del país tal como lo ingresa el usuario (sin normalizar a
+    // minúsculas)
     country.setCountryName(createCountryDto.getCountryName().trim());
-    country.setCountryCode(createCountryDto.getCountryCode().trim());
+
+    // Guardar el código del país en mayúsculas
+    country.setCountryCode(countryCodeNormalized);
+
+    // Asignar la población
     country.setPopulation(createCountryDto.getPopulation());
 
     // Guardar la nueva entidad en la base de datos
     Country savedCountry = countryRepository.save(country);
 
-    // Retornar el país guardado (si deseas devolver un DTO en lugar de la entidad,
-    // puedes mapearlo aquí)
+    // Retornar el país guardado
     return savedCountry;
   }
 

@@ -165,17 +165,18 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
     EnergyType energyType = energyTypeRepository.findById(energyTypeId)
         .orElseThrow(() -> new RuntimeException("EnergyType not found"));
 
-    // Verificar si ya existe un registro con el mismo ID de tipo de energía usando
-    // el método Optional
-    Optional<RenewableEnergies> existingEntry = renewableEnergiesRepository.findFirstByEnergyTypeId(energyTypeId);
+    // Verificar si ya existe un registro con el mismo tipo de energía, país y año
+    Long countryId = createRenewableEnergyDto.getCountry();
+    Optional<RenewableEnergies> existingEntry = renewableEnergiesRepository
+        .findFirstByEnergyTypeIdAndCountryIdAndYear(energyTypeId, countryId, createRenewableEnergyDto.getYear());
+
     if (existingEntry.isPresent()) {
-      throw new IllegalArgumentException("Ya existe un registro para este tipo de energía renovable.");
+      throw new IllegalArgumentException("Ya existe un registro para este tipo de energía, país y año.");
     }
 
     // Validación y asignación del país
     Country country = null;
-    if (createRenewableEnergyDto.getCountry() != null) {
-      Long countryId = createRenewableEnergyDto.getCountry();
+    if (countryId != null) {
       country = countryRepository.findById(countryId)
           .orElseThrow(() -> new RuntimeException("Country not found"));
     }
@@ -195,8 +196,6 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
   @Transactional
   public String update(Long id, UpdateRenewableEnergyDto updateRenewableEnergyDto) {
     // Buscar la entidad RenewableEnergy existente por su ID
-
-    System.out.println(updateRenewableEnergyDto.getEnergyType());
     RenewableEnergies renewableEnergy = renewableEnergiesRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("RenewableEnergy not found"));
 
@@ -225,11 +224,27 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
     if (updateRenewableEnergyDto.getProduction() != null) {
       renewableEnergy.setProduction(updateRenewableEnergyDto.getProduction());
     }
+
+    // Si se pasa un nuevo año, verificar si ya existe un registro con el mismo tipo
+    // de energía, país y año
     if (updateRenewableEnergyDto.getYear() != null) {
-      renewableEnergy.setYear(updateRenewableEnergyDto.getYear());
+      int newYear = updateRenewableEnergyDto.getYear();
+      Long energyTypeId = renewableEnergy.getEnergyType().getId();
+      Long countryId = renewableEnergy.getCountry().getId();
+
+      // Verificar si ya existe un registro con el mismo tipo de energía, país y año
+      Optional<RenewableEnergies> existingEntry = renewableEnergiesRepository
+          .findFirstByEnergyTypeIdAndCountryIdAndYear(energyTypeId, countryId, newYear);
+
+      if (existingEntry.isPresent()) {
+        throw new IllegalArgumentException("Ya existe un registro para este tipo de energía, país y año.");
+      }
+
+      renewableEnergy.setYear(newYear);
     }
-    renewableEnergiesRepository.save(renewableEnergy);
+
     // Guardar y retornar la entidad actualizada
+    renewableEnergiesRepository.save(renewableEnergy);
     return "Energia Renovable actualizada correctamente";
   }
 

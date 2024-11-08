@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-
 import com.energytop.energytop_backend.renewableEnergy.entities.RenewableEnergies;
 
 public interface RenewableEnergyRepository extends JpaRepository<RenewableEnergies, Long> {
@@ -17,5 +16,7 @@ public interface RenewableEnergyRepository extends JpaRepository<RenewableEnergi
   List<RenewableEnergies> findByEnergyTypeId(Long energyTypeId);
 
   Optional<RenewableEnergies> findFirstByEnergyTypeId(Long energyTypeId);
+
+  Optional<RenewableEnergies> findFirstByEnergyTypeIdAndCountryIdAndYear(Long energyTypeId, Long countryId, int year);
 
 }
