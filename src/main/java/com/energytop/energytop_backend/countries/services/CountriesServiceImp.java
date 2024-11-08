@@ -81,14 +81,34 @@ public class CountriesServiceImp implements CountriesService {
 
     Country countryToEdit = countryDb.get();
 
-    // Actualizar nombre del país si se proporciona un nuevo valor
+    // Verificar si el nombre del país es nuevo y si ya existe en la base de datos
     if (updateCountryDto.getCountryName() != null) {
-      countryToEdit.setCountryName(updateCountryDto.getCountryName().trim());
+      String newCountryName = updateCountryDto.getCountryName().trim();
+
+      // Validar si ya existe otro país con el mismo nombre
+      Optional<Country> existingCountryName = countryRepository.findByCountryName(newCountryName);
+      if (existingCountryName.isPresent() && !existingCountryName.get().getId().equals(id)) {
+        throw new IllegalArgumentException("Ya existe un país con el nombre: " + newCountryName);
+      }
+
+      // Si pasa la validación, actualizar el nombre
+      countryToEdit.setCountryName(newCountryName);
     }
-    // Actualizar el código del país si se proporciona un nuevo valor
+
+    // Verificar si el código del país es nuevo y si ya existe en la base de datos
     if (updateCountryDto.getCountryCode() != null) {
-      countryToEdit.setCountryCode(updateCountryDto.getCountryCode().trim());
+      String newCountryCode = updateCountryDto.getCountryCode().trim();
+
+      // Validar si ya existe otro país con el mismo código
+      Optional<Country> existingCountryCode = countryRepository.findByCountryCode(newCountryCode);
+      if (existingCountryCode.isPresent() && !existingCountryCode.get().getId().equals(id)) {
+        throw new IllegalArgumentException("Ya existe un país con el código: " + newCountryCode);
+      }
+
+      // Si pasa la validación, actualizar el código
+      countryToEdit.setCountryCode(newCountryCode);
     }
+
     // Actualizar la población si se proporciona un nuevo valor
     if (updateCountryDto.getPopulation() != null) {
       countryToEdit.setPopulation(updateCountryDto.getPopulation());

@@ -194,7 +194,16 @@ public class AuthServiceImpl implements AuthService {
     if ("email".equalsIgnoreCase(searchBy)) {
       List<User> usersDb = userRepository.findByEmailStartingWithIgnoreCase(searchTerm);
 
-      return usersDb.stream().map(user -> UserDtoMapper.builder().setUser(user).build()).collect(Collectors.toList());
+      usersDb.stream()
+          .filter(user -> {
+
+            boolean isAdmin = user.getRoles().stream()
+                .anyMatch(role -> "ROLE_ADMIN".equals(role.getName()));
+            return !isAdmin;
+          })
+          .map(user -> UserDtoMapper.builder().setUser(user).build())
+          .collect(Collectors.toList());
+      ;
     }
     throw new IllegalArgumentException("El campo de búsqueda '" + searchBy + "' no es válido.");
   }

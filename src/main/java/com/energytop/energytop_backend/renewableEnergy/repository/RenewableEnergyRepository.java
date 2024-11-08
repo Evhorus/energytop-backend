@@ -1,6 +1,7 @@
 package com.energytop.energytop_backend.renewableEnergy.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,5 +15,7 @@ public interface RenewableEnergyRepository extends JpaRepository<RenewableEnergi
   List<RenewableEnergies> findByCountryId(Long countryId);
 
   List<RenewableEnergies> findByEnergyTypeId(Long energyTypeId);
+
+  Optional<RenewableEnergies> findFirstByEnergyTypeId(Long energyTypeId);
 
 }

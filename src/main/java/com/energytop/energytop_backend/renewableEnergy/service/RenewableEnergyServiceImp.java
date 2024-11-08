@@ -161,11 +161,15 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
   @Transactional
   public RenewableEnergies create(CreateRenewableEnergyDto createRenewableEnergyDto) {
     // Validación y asignación del tipo de energía
-    EnergyType energyType = null;
-    if (createRenewableEnergyDto.getEnergyType() != null) {
-      Long energyTypeId = createRenewableEnergyDto.getEnergyType();
-      energyType = energyTypeRepository.findById(energyTypeId)
-          .orElseThrow(() -> new RuntimeException("EnergyType not found"));
+    Long energyTypeId = createRenewableEnergyDto.getEnergyType();
+    EnergyType energyType = energyTypeRepository.findById(energyTypeId)
+        .orElseThrow(() -> new RuntimeException("EnergyType not found"));
+
+    // Verificar si ya existe un registro con el mismo ID de tipo de energía usando
+    // el método Optional
+    Optional<RenewableEnergies> existingEntry = renewableEnergiesRepository.findFirstByEnergyTypeId(energyTypeId);
+    if (existingEntry.isPresent()) {
+      throw new IllegalArgumentException("Ya existe un registro para este tipo de energía renovable.");
     }
 
     // Validación y asignación del país
@@ -183,6 +187,7 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
     renewableEnergy.setYear(createRenewableEnergyDto.getYear());
     renewableEnergy.setEnergyType(energyType);
     renewableEnergy.setCountry(country);
+
     return renewableEnergiesRepository.save(renewableEnergy);
   }
 

@@ -10,7 +10,9 @@ import org.springframework.data.repository.query.Param;
 import com.energytop.energytop_backend.countries.entities.Country;
 
 public interface CountryRepository extends JpaRepository<Country, Long> {
-        Optional<Country> findByCountryName(String countryName);    
+        Optional<Country> findByCountryName(String countryName);
+
+        Optional<Country> findByCountryCode(String countryCode);
 
         @Query(value = "SELECT * FROM countries c WHERE LOWER(unaccent(c.country_name)) LIKE LOWER(concat(:searchTerm, '%'))", nativeQuery = true)
         List<Country> searchByCountryName(@Param("searchTerm") String searchTerm);

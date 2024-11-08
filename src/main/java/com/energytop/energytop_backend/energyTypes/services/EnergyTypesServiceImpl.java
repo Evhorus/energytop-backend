@@ -51,16 +51,24 @@ public class EnergyTypesServiceImpl implements EnergyTypesService {
     @Override
     @Transactional
     public EnergyType create(CreateEnergyTypeDto createEnergyTypeDto) {
+        Optional<EnergyType> existingEnergyType = energyTypeRepository
+                .findByEnergyName(createEnergyTypeDto.getEnergyName());
+
+        if (existingEnergyType.isPresent()) {
+            throw new IllegalArgumentException("Ya existe un tipo de energía con ese nombre");
+        }
+
         EnergyType energyType = new EnergyType();
         energyType.setEnergyName(createEnergyTypeDto.getEnergyName());
         energyType.setSource(createEnergyTypeDto.getSource());
-        return energyTypeRepository.save(energyType);
+
+        EnergyType savedEnergyType = energyTypeRepository.save(energyType);
+        return savedEnergyType;
     }
 
     @Override
     @Transactional
     public String update(Long id, UpdateEnergyTypeDto updateEnergyTypeDto) {
-
         Optional<EnergyType> energyTypeDb = energyTypeRepository.findById(id);
 
         if (energyTypeDb.isEmpty()) {
@@ -69,10 +77,21 @@ public class EnergyTypesServiceImpl implements EnergyTypesService {
 
         EnergyType energyTypeToEdit = energyTypeDb.get();
 
-        if (energyTypeToEdit.getEnergyName() != null) {
-            energyTypeToEdit.setEnergyName(updateEnergyTypeDto.getEnergyName().trim());
+        // Verificar si el nuevo nombre ya existe en la base de datos
+        if (updateEnergyTypeDto.getEnergyName() != null) {
+            String newEnergyName = updateEnergyTypeDto.getEnergyName().trim();
+
+            // Validar si ya existe otro tipo de energía con el mismo nombre
+            Optional<EnergyType> existingEnergyType = energyTypeRepository.findByEnergyName(newEnergyName);
+            if (existingEnergyType.isPresent() && !existingEnergyType.get().getId().equals(id)) {
+                throw new IllegalArgumentException("Ya existe un tipo de energía con el nombre: " + newEnergyName);
+            }
+
+            // Si pasa la validación, actualizar el nombre
+            energyTypeToEdit.setEnergyName(newEnergyName);
         }
-        if (energyTypeToEdit.getSource() != null) {
+
+        if (updateEnergyTypeDto.getSource() != null) {
             energyTypeToEdit.setSource(updateEnergyTypeDto.getSource().trim());
         }
 
