@@ -191,20 +191,24 @@ public class AuthServiceImpl implements AuthService {
     String searchTerm = StringUtils.removeAccents(searchDto.getSearchTerm()).toLowerCase();
     String searchBy = searchDto.getSearchBy();
 
+    // Verificamos si el campo de búsqueda es "email"
     if ("email".equalsIgnoreCase(searchBy)) {
+      // Buscar los usuarios que tengan un correo que empiece con el término de
+      // búsqueda (sin importar mayúsculas/minúsculas)
       List<User> usersDb = userRepository.findByEmailStartingWithIgnoreCase(searchTerm);
 
-      usersDb.stream()
+      // Filtramos los usuarios que no son administradores y los mapeamos a UserDto
+      return usersDb.stream()
           .filter(user -> {
-
             boolean isAdmin = user.getRoles().stream()
                 .anyMatch(role -> "ROLE_ADMIN".equals(role.getName()));
-            return !isAdmin;
+            return !isAdmin; // Excluimos los administradores
           })
-          .map(user -> UserDtoMapper.builder().setUser(user).build())
-          .collect(Collectors.toList());
-      ;
+          .map(user -> UserDtoMapper.builder().setUser(user).build()) // Mapeo a UserDto
+          .collect(Collectors.toList()); // Devolvemos la lista de UserDto
     }
+
+    // Si el campo de búsqueda no es válido, lanzamos una excepción
     throw new IllegalArgumentException("El campo de búsqueda '" + searchBy + "' no es válido.");
   }
 

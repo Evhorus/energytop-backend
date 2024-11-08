@@ -46,7 +46,7 @@ public class AuthController {
     return ResponseEntity.status(HttpStatus.OK).body(user);
   }
 
-  @GetMapping("search")
+  @GetMapping("/search")
   public List<UserDto> searchUsers(@RequestParam String searchTerm, @RequestParam String searchBy) {
     SearchDto searchDto = new SearchDto();
     searchDto.setSearchTerm(searchTerm);
