@@ -234,7 +234,7 @@ public class RenewableEnergyServiceImp implements RenewableEnergyService {
 
       // Verificar si ya existe un registro con el mismo tipo de energía, país y año
       Optional<RenewableEnergies> existingEntry = renewableEnergiesRepository
-          .findFirstByEnergyTypeIdAndCountryIdAndYear(energyTypeId, countryId, newYear);
+          .findSecondByEnergyTypeIdAndCountryIdAndYearExcludingCurrent(energyTypeId, countryId, newYear,id);
 
       if (existingEntry.isPresent()) {
         throw new IllegalArgumentException("Ya existe un registro para este tipo de energía, país y año.");

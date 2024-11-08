@@ -6,8 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class EnergytopBackendApplication {
 
 	public static void main(String[] args) {
-
-		
 		SpringApplication.run(EnergytopBackendApplication.class, args);
 	}
 
