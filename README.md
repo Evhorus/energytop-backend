@@ -49,12 +49,27 @@ Para la creación de esta API se utilizaron las siguientes tecnologías:
      - **Usuario**: `energytop`
      - **Contraseña**: `12345`
      - **Host**: `localhost`
-     - **Puerto**: `3306`
+     - **Puerto**: `5432`
    - Nota: Si cambiaste las credenciales en el archivo `docker-compose.yml`, utiliza las credenciales correspondientes.
 
-### 4. Verificar que la aplicación esté corriendo
+### 4. Ejecutar el comando SQL
+
+
+ - Ejecuta el siguiente comando SQL en el administrador de bases de datos (DBeaver, TablePlus o MySQL Workbench).
+
+ ```
+CREATE EXTENSION IF NOT EXISTS unaccent;
+ ```
+
+### 5. Verificar que la aplicación esté corriendo
    - Puedes usar Postman, Insomnia o cualquier cliente HTTP para hacer solicitudes a los endpoints de la aplicación y verificar que el backend esté funcionando correctamente.
    - Ejemplo: Realiza una solicitud GET a `http://localhost:8080/api/health` para comprobar el estado de la API.
+
+
+### Ingresar al sistema 
+
+  - El usuario por defecto es: admin@admin.com
+  - La contraseña por defecto es: admin_password
 
 ## Comandos Útiles de Docker
 

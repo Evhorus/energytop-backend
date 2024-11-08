@@ -52,6 +52,7 @@ public class SpringSecurityConfig {
               .requestMatchers(HttpMethod.GET, "/energy-types/**").permitAll()  
               .requestMatchers(HttpMethod.GET, "/countries/**").permitAll()  
               .requestMatchers(HttpMethod.GET, "/users/**").permitAll()  
+              .requestMatchers(HttpMethod.GET, "/health").permitAll()  
               .requestMatchers(HttpMethod.PATCH, "/users/profile/**").permitAll()  
               .requestMatchers("/users/**").hasRole("ADMIN")
               .requestMatchers("/renewable-energies/**").hasRole("ADMIN")
