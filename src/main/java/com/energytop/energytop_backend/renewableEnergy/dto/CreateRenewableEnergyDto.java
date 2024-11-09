@@ -1,9 +1,9 @@
 package com.energytop.energytop_backend.renewableEnergy.dto;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,11 +12,13 @@ import lombok.Setter;
 public class CreateRenewableEnergyDto {
 
   @NotNull(message = "El consumo no puede ser nulo")
-  @DecimalMin(value = "0.01", inclusive = false, message = "El consumo debe ser mayor que 0")
+  @DecimalMin(value = "0.000001", inclusive = false, message = "La producción debe ser mayor que 0")
+  @Digits(integer = 10, fraction = 6)
   private Double consumption;
-  
+
   @NotNull(message = "La producción no puede ser nula")
-  @DecimalMin(value = "0.01", inclusive = false, message = "La producción debe ser mayor que 0")
+  @DecimalMin(value = "0.000001", inclusive = false, message = "La producción debe ser mayor que 0")
+  @Digits(integer = 10, fraction = 6)
   private Double production;
 
   @NotNull(message = "El año no puede ser nulo")
